@@ -29,12 +29,30 @@ public class ChatController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/transferred")
-    public ResponseEntity<?> completeTransfer(
+    @PostMapping("/remitted")
+    public ResponseEntity<?> completeRemit(
             @PathVariable Long roomId,
             @AuthenticationPrincipal User user) throws IOException {
 
-        chatService.completeTransfer(roomId, user);
+        chatService.completeRemit(roomId, user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/delivered")
+    public ResponseEntity<?> completeDelivery(
+            @PathVariable Long roomId,
+            @AuthenticationPrincipal User user) throws IOException {
+
+        chatService.completeDelivery(roomId, user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/received")
+    public ResponseEntity<?> completeReceive(
+            @PathVariable Long roomId,
+            @AuthenticationPrincipal User user) throws IOException {
+
+        chatService.completeReceive(roomId, user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
