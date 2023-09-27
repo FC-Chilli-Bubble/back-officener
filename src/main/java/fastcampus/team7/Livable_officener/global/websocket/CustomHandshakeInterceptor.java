@@ -19,10 +19,8 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor 
     private final DeliveryRepository roomRepository;
 
     @Override
-    public boolean beforeHandshake(ServerHttpRequest request,
-                                   ServerHttpResponse response,
-                                   WebSocketHandler wsHandler,
-                                   Map<String, Object> attributes) {
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                   WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
         attributes.put("room", getRoom(request));
         return true;
@@ -34,7 +32,7 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor 
                 .orElseThrow(NotFoundRoomException::new);
     }
 
-    private static Long parseRoomId(ServerHttpRequest request) {
+    private Long parseRoomId(ServerHttpRequest request) {
         String path = request.getURI().getPath();
         String roomIdStr = path.substring(path.lastIndexOf('/') + 1);
         return Long.parseLong(roomIdStr);

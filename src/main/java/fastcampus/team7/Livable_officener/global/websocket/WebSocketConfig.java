@@ -2,26 +2,23 @@ package fastcampus.team7.Livable_officener.global.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.*;
 
 @RequiredArgsConstructor
 @Configuration
-@EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer {
-
-    private final CustomTextWebSocketHandler customTextWebSocketHandler;
-    private final CustomHandshakeInterceptor customHandshakeInterceptor;
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(customTextWebSocketHandler, "/api/chat/*")
-                .setAllowedOrigins("*")
-                .addInterceptors(customHandshakeInterceptor)
-//                .setAllowedOrigins("FRONT_ORIGIN") // 추후 프론트엔드 URL 결정되면 주석 풀기
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
+    }
 
-        ;
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/api/chat").withSockJS();
     }
 
 }

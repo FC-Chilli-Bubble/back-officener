@@ -5,12 +5,15 @@ import fastcampus.team7.Livable_officener.domain.User;
 import fastcampus.team7.Livable_officener.dto.chat.ChatroomInfoDTO;
 import fastcampus.team7.Livable_officener.dto.chat.KickDTO;
 import fastcampus.team7.Livable_officener.dto.chat.ReportDTO;
+import fastcampus.team7.Livable_officener.dto.chat.SendChatDTO;
 import fastcampus.team7.Livable_officener.global.util.APIDataResponse;
 import fastcampus.team7.Livable_officener.global.util.APIErrorResponse;
 import fastcampus.team7.Livable_officener.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +34,13 @@ public class ChatController {
 
         ChatroomInfoDTO dto = chatService.getChatroomInfo(roomId, user);
         return APIDataResponse.of(HttpStatus.OK, dto);
+    }
+
+    @MessageMapping
+    public void handleChatMessage(
+            @DestinationVariable Long roomId,
+            SendChatDTO sendChatDTO) throws IOException {
+        chatService.send(sendChatDTO);
     }
 
     @PostMapping("/closed")

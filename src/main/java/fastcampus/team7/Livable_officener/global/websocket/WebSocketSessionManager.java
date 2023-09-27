@@ -1,7 +1,10 @@
 package fastcampus.team7.Livable_officener.global.websocket;
 
 import fastcampus.team7.Livable_officener.domain.User;
+import fastcampus.team7.Livable_officener.dto.chat.SendChatDTO;
 import fastcampus.team7.Livable_officener.global.exception.NotFoundRoomException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -12,9 +15,18 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@RequiredArgsConstructor
 public class WebSocketSessionManager {
 
     private final Map<Long, Collection<WebSocketSession>> roomIdToSessions = new ConcurrentHashMap<>();
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public void sendToRoom(Long roomId, SendChatDTO sendChatDTO) {
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, sendChatDTO);
+    }
+
+
 
     public static User getSessionUser(WebSocketSession session) {
         Authentication auth = Objects.requireNonNull((Authentication) session.getPrincipal());
@@ -58,13 +70,6 @@ public class WebSocketSessionManager {
             session.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void send(Long roomId, TextMessage message) throws IOException {
-        Collection<WebSocketSession> webSocketSessions = getWebSocketSessions(roomId);
-        for (WebSocketSession webSocketSession : webSocketSessions) {
-            webSocketSession.sendMessage(message);
         }
     }
 

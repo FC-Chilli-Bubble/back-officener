@@ -13,6 +13,7 @@ import fastcampus.team7.Livable_officener.global.util.LocalDateTimeDeserializer;
 import fastcampus.team7.Livable_officener.global.websocket.WebSocketSessionManager;
 import fastcampus.team7.Livable_officener.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
@@ -38,6 +39,7 @@ public class ChatService {
     private final DeliveryRepository roomRepository;
     private final DeliveryParticipantRepository roomParticipantRepository;
     private final WebSocketSessionManager webSocketSessionManager;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostConstruct
     public void setup() {
@@ -52,6 +54,8 @@ public class ChatService {
         Room room = sendChatDTO.getRoom();
         User sender = sendChatDTO.getSender();
         SendPayloadDTO payloadDto = getSendPayloadDTO(sender, sendChatDTO.getMessage());
+
+        messagingTemplate.convertAndSend("/topic/chat/" + room.getId(), payloadDto);
 
         sendMessage(room, sender, payloadDto);
     }
@@ -278,9 +282,10 @@ public class ChatService {
     }
 
     private void sendMessage(Room room, User sender, SendPayloadDTO payloadDto) throws IOException {
-        TextMessage message = convertPayloadDtoToJsonTextMessage(payloadDto);
+        SendChatDTO sendChatDTO = new SendChatDTO(room, sender, new TextMessage(objectMapper.writeValueAsString(payloadDto)));
 
-        webSocketSessionManager.send(room.getId(), message);
+        webSocketSessionManager.sendToRoom(room.getId(), sendChatDTO);
+
         chatRepository.save(Chat.from(room, sender, payloadDto));
 
         // 함께배달 참여자 중 웹소켓세션이 연결되어있지 않은(=채팅 페이지를 벗어난) 참여자들의 unreadCount 증가
@@ -293,11 +298,6 @@ public class ChatService {
         if (room.getStatus() != RoomStatus.ACTIVE) {
             throw new NotActiveRoomException();
         }
-    }
-
-    private TextMessage convertPayloadDtoToJsonTextMessage(SendPayloadDTO payloadDTO) throws JsonProcessingException {
-        String payload = objectMapper.writeValueAsString(payloadDTO);
-        return new TextMessage(payload);
     }
 
     @Transactional
@@ -320,4 +320,5 @@ public class ChatService {
                 .collect(Collectors.toList());
         return new ChatroomInfoDTO(messages, members);
     }
+
 }
