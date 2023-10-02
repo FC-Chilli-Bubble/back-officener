@@ -1,11 +1,13 @@
 package fastcampus.team7.Livable_officener.controller;
 
+import fastcampus.team7.Livable_officener.domain.User;
 import fastcampus.team7.Livable_officener.dto.NotificationDTO;
 import fastcampus.team7.Livable_officener.global.util.APIDataResponse;
 import fastcampus.team7.Livable_officener.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,5 +38,12 @@ public class NotificationController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         String token = authorization.split(" ")[1];
         return notificationService.readNotify(token,notifyId);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity register(@RequestBody String token,
+                                   @AuthenticationPrincipal User user) {
+        notificationService.register(user.getId(), token);
+        return ResponseEntity.ok().build();
     }
 }

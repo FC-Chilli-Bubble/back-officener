@@ -2,6 +2,7 @@ package fastcampus.team7.Livable_officener.controller;
 
 import fastcampus.team7.Livable_officener.dto.*;
 import fastcampus.team7.Livable_officener.global.util.APIDataResponse;
+import fastcampus.team7.Livable_officener.service.NotificationService;
 import fastcampus.team7.Livable_officener.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ public class SignUpController {
 
     @Autowired
     private SignUpService signUpService;
+
+    @Autowired
+    NotificationService notificationService;
 
     @GetMapping("/building")
     public ResponseEntity<APIDataResponse<Map<String, List<BuildingWithCompaniesDTO>>>> getAllBuildings(@RequestParam("name") String keyword) {
