@@ -1,9 +1,7 @@
 package fastcampus.team7.Livable_officener.dto.chat;
 
-import lombok.*;
+import lombok.Getter;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 public class KickDTO {
     private Long kickedUserId;
