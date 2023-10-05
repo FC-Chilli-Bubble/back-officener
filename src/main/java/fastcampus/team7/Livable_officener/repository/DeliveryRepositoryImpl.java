@@ -99,10 +99,9 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
     @Override
     public List<Room> findByDeadlineAfterNowAndStatusEqualsActive() {
         return queryFactory
-                .select(room)
-                .from(room)
-                .where(room.deadline.after(LocalDateTime.now())
-                        .and(room.status.eq(RoomStatus.ACTIVE)))
+                .selectFrom(room)
+                .where(room.status.eq(RoomStatus.ACTIVE)
+                        .and(room.deadline.after(LocalDateTime.now())))
                 .fetch();
     }
 
