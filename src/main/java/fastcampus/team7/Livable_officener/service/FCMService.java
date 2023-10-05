@@ -30,8 +30,10 @@ public class FCMService {
         String fcmToken = dto.getFcmToken();
         if (status == FCMNotificationStatusUpdateType.ACTIVATE) {
             validateIfTokenHasText(fcmToken);
+            log.info("알림 켜기 - {}", dto.getEmail());
             turnOnNotificationPushing(dto);
         } else if (status == FCMNotificationStatusUpdateType.DEACTIVATE) {
+            log.info("알림 끄기 - {}", dto.getEmail());
             turnOffNotificationPushing(dto);
         } else if (status == FCMNotificationStatusUpdateType.KEEP) {
             // 로그인
@@ -41,9 +43,11 @@ public class FCMService {
                 // 존재하면 가져와서 token만 갱신
                 FCMStatusDTO fcmStatusDTO = fcmStatusRepository.get(email);
                 fcmStatusDTO.setFcmToken(fcmToken);
+                log.info("로그인 (알림 상태 유지:{}) - {}", dto.getStatus(), dto.getEmail());
                 fcmStatusRepository.save(email, fcmStatusDTO);
             } else {
                 // 없으면 알림 켜기로 갱신
+                log.info("로그인 (알림 켜기) - {}", dto.getEmail());
                 turnOnNotificationPushing(dto);
             }
         }
@@ -97,6 +101,7 @@ public class FCMService {
         if (fcmStatusRepository.contains(email)) {
             FCMStatusDTO dto = fcmStatusRepository.get(email);
             dto.setFcmToken(null);
+            log.info("로그아웃 (알림 상태 유지:{}) - {}", dto.getStatus(), email);
             fcmStatusRepository.save(email, dto);
         }
     }
