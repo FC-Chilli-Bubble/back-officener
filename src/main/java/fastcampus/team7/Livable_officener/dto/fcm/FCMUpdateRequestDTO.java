@@ -8,7 +8,7 @@ public class FCMUpdateRequestDTO {
 
     private String email;
     private String fcmToken;
-    private FCMNotificationStatusUpdateType status;
+    private FCMNotificationStatusUpdateType type;
 
     public void setEmail(String email) {
         this.email = email;
