@@ -31,7 +31,7 @@ public class FCMController {
     public ResponseEntity<?> logout(
             @AuthenticationPrincipal User user) {
 
-        fcmService.delete(user.getEmail());
+        fcmService.deleteToken(user.getEmail());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
