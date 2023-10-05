@@ -26,16 +26,16 @@ public class FCMService {
 
     @Transactional
     public void update(FCMUpdateRequestDTO dto) {
-        FCMNotificationStatusUpdateType status = dto.getStatus();
+        FCMNotificationStatusUpdateType type = dto.getType();
         String fcmToken = dto.getFcmToken();
-        if (status == FCMNotificationStatusUpdateType.ACTIVATE) {
+        if (type == FCMNotificationStatusUpdateType.ACTIVATE) {
             validateIfTokenHasText(fcmToken);
             log.info("알림 켜기 - {}", dto.getEmail());
             turnOnNotificationPushing(dto);
-        } else if (status == FCMNotificationStatusUpdateType.DEACTIVATE) {
+        } else if (type == FCMNotificationStatusUpdateType.DEACTIVATE) {
             log.info("알림 끄기 - {}", dto.getEmail());
             turnOffNotificationPushing(dto);
-        } else if (status == FCMNotificationStatusUpdateType.KEEP) {
+        } else if (type == FCMNotificationStatusUpdateType.KEEP) {
             // 로그인
             validateIfTokenHasText(fcmToken);
             String email = dto.getEmail();
@@ -43,7 +43,7 @@ public class FCMService {
                 // 존재하면 가져와서 token만 갱신
                 FCMStatusDTO fcmStatusDTO = fcmStatusRepository.get(email);
                 fcmStatusDTO.setFcmToken(fcmToken);
-                log.info("로그인 (알림 상태 유지:{}) - {}", dto.getStatus(), dto.getEmail());
+                log.info("로그인 (알림 상태 유지:{}) - {}", dto.getType(), dto.getEmail());
                 fcmStatusRepository.save(email, fcmStatusDTO);
             } else {
                 // 없으면 알림 켜기로 갱신

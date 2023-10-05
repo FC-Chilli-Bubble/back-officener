@@ -11,4 +11,12 @@ import lombok.Setter;
 public class FCMStatusDTO {
     private String fcmToken;
     private FCMNotificationStatus status;
+
+    @Override
+    public String toString() {
+        return "FCMStatusDTO{" +
+                "fcmToken='" + fcmToken + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }
