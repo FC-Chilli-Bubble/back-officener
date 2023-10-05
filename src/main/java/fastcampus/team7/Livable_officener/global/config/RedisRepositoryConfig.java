@@ -1,5 +1,6 @@
 package fastcampus.team7.Livable_officener.global.config;
 
+import fastcampus.team7.Livable_officener.dto.fcm.FCMStatusDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +31,16 @@ public class RedisRepositoryConfig {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(StringRedisSerializer.UTF_8);
-        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setValueSerializer(StringRedisSerializer.UTF_8);
+        return redisTemplate;
+    }
 
+    @Bean
+    public RedisTemplate<String, FCMStatusDTO> fcmStatusRedisTemplate() {
+        RedisTemplate<String, FCMStatusDTO> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(StringRedisSerializer.UTF_8);
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return redisTemplate;
     }
 }
