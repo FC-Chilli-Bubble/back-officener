@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -42,10 +41,9 @@ public class SchedulingConfig {
     @Scheduled(fixedRate = 5000)
     @Transactional
     public void pushToGuests5MinBeforeDeadline() {
-        // deadline - 5 <= now => deadline <= now + 5
-        final LocalDateTime fiveMinutesAfter = LocalDateTime.now().plusMinutes(5);
         final ChatType messageType = ChatType.CLOSE_TO_DEADLINE;
-        List<Room> rooms = deliveryRepository.findByDeadlineBefore(fiveMinutesAfter);
+        // deadline - 5 > now => deadline > now + 5
+        List<Room> rooms = deliveryRepository.findActiveAndCloseToDeadlineAndUnnotifiedRooms();
         for (Room room : rooms) {
             // 모든 게스트에게 (시스템 메시지 및) 알림 송신, 알림 저장
             List<Long> guestIds = participantRepository.findUserIdsByRoomIdAndRole(room.getId(), Role.GUEST);
