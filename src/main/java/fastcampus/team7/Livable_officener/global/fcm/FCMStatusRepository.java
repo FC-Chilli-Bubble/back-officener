@@ -14,7 +14,7 @@ public class FCMStatusRepository {
     private final RedisTemplate<String, FCMStatusDTO> fcmStatusRedisTemplate;
 
     public void save(String email, FCMStatusDTO dto) {
-        log.info("[FCM 토큰 저장]");
+        log.info("FCM 토큰 저장 - {} - {}", email, dto);
         fcmStatusRedisTemplate.opsForValue()
                 .set(email, dto);
     }
