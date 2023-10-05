@@ -4,9 +4,12 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import fastcampus.team7.Livable_officener.domain.QNotification;
 import fastcampus.team7.Livable_officener.domain.Room;
 import fastcampus.team7.Livable_officener.dto.delivery.RoomDetailDTO;
+import fastcampus.team7.Livable_officener.global.constant.ChatType;
 import fastcampus.team7.Livable_officener.global.constant.Role;
 import fastcampus.team7.Livable_officener.global.constant.RoomStatus;
 import lombok.RequiredArgsConstructor;
@@ -100,6 +103,23 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
                 .from(room)
                 .where(room.deadline.after(LocalDateTime.now())
                         .and(room.status.eq(RoomStatus.ACTIVE)))
+                .fetch();
+    }
+
+    @Override
+    public List<Room> findActiveAndCloseToDeadlineAndUnnotifiedRooms() {
+        QNotification notification = QNotification.notification;
+        JPAQuery<Long> subquery = queryFactory
+                .select(notification.room.id)
+                .from(notification)
+                .where(notification.type.eq(ChatType.CLOSE_TO_DEADLINE))
+                .groupBy(notification.room.id);
+
+        return queryFactory
+                .selectFrom(room)
+                .where(room.status.eq(RoomStatus.ACTIVE)
+                        .and(room.deadline.after(LocalDateTime.now().plusMinutes(5)))
+                        .and(room.id.in(subquery)))
                 .fetch();
     }
 }
