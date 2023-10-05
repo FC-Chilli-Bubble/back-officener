@@ -5,45 +5,64 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import fastcampus.team7.Livable_officener.dto.fcm.FCMNotificationDTO;
+import fastcampus.team7.Livable_officener.dto.fcm.FCMStatusDTO;
 import fastcampus.team7.Livable_officener.dto.fcm.FCMUpdateRequestDTO;
+import fastcampus.team7.Livable_officener.global.constant.FCMNotificationStatus;
 import fastcampus.team7.Livable_officener.global.constant.FCMNotificationStatusUpdateType;
-import fastcampus.team7.Livable_officener.global.fcm.FCMNotificationStatusRepository;
-import fastcampus.team7.Livable_officener.global.fcm.FCMTokenRepository;
+import fastcampus.team7.Livable_officener.global.fcm.FCMStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class FCMService {
 
-    private final FCMTokenRepository fcmTokenRepository;
-    private final FCMNotificationStatusRepository fcmNotificationStatusRepository;
+    private final FCMStatusRepository fcmStatusRepository;
     private final FirebaseMessaging firebaseMessaging;
 
     @Transactional
     public void update(FCMUpdateRequestDTO dto) {
         FCMNotificationStatusUpdateType status = dto.getStatus();
+        String fcmToken = dto.getFcmToken();
         if (status == FCMNotificationStatusUpdateType.ACTIVATE) {
+            validateIfTokenHasText(fcmToken);
             turnOnNotificationPushing(dto);
         } else if (status == FCMNotificationStatusUpdateType.DEACTIVATE) {
             turnOffNotificationPushing(dto);
         } else if (status == FCMNotificationStatusUpdateType.KEEP) {
             // 로그인
-            fcmTokenRepository.save(dto);
+            validateIfTokenHasText(fcmToken);
+            String email = dto.getEmail();
+            if (fcmStatusRepository.contains(email)) {
+                // 존재하면 가져와서 token만 갱신
+                FCMStatusDTO fcmStatusDTO = fcmStatusRepository.get(email);
+                fcmStatusDTO.setFcmToken(fcmToken);
+                fcmStatusRepository.save(email, fcmStatusDTO);
+            } else {
+                // 없으면 알림 켜기로 갱신
+                turnOnNotificationPushing(dto);
+            }
+        }
+    }
+
+    private static void validateIfTokenHasText(String fcmToken) {
+        if (!StringUtils.hasText(fcmToken)) {
+            throw new IllegalArgumentException("fcmToken이 비어있습니다.");
         }
     }
 
     private void turnOnNotificationPushing(FCMUpdateRequestDTO dto) {
-        fcmTokenRepository.save(dto);
-        fcmNotificationStatusRepository.save(dto);
+        FCMStatusDTO fcmStatusDTO = new FCMStatusDTO(dto.getFcmToken(), FCMNotificationStatus.ACTIVE);
+        fcmStatusRepository.save(dto.getEmail(), fcmStatusDTO);
     }
 
     private void turnOffNotificationPushing(FCMUpdateRequestDTO dto) {
-        fcmTokenRepository.delete(dto.getEmail());
-        fcmNotificationStatusRepository.save(dto);
+        FCMStatusDTO fcmStatusDTO = new FCMStatusDTO(null, FCMNotificationStatus.INACTIVE);
+        fcmStatusRepository.save(dto.getEmail(), fcmStatusDTO);
     }
 
     @Transactional
@@ -65,21 +84,29 @@ public class FCMService {
     }
 
     private String getFcmToken(String email) {
-        return fcmTokenRepository.find(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id를 가진 회원의 FCM 토큰이 존재하지 않습니다."));
+        FCMStatusDTO dto = fcmStatusRepository.get(email);
+        String fcmToken = dto.getFcmToken();
+        if (fcmToken == null) {
+            throw new IllegalCallerException("FCM 토큰이 존재하지 않습니다.");
+        }
+        return fcmToken;
     }
 
     @Transactional
-    public void delete(String email) {
-        fcmTokenRepository.delete(email);
+    public void deleteToken(String email) {
+        if (fcmStatusRepository.contains(email)) {
+            FCMStatusDTO dto = fcmStatusRepository.get(email);
+            dto.setFcmToken(null);
+            fcmStatusRepository.save(email, dto);
+        }
     }
 
     @Transactional(readOnly = true)
     public boolean isSubscribed(String email) {
-        boolean tokenExists = fcmTokenRepository.contains(email);
-        if (!tokenExists) {
+        FCMStatusDTO dto = fcmStatusRepository.get(email);
+        if (!StringUtils.hasText(dto.getFcmToken())) {
             return false;
         }
-        return fcmNotificationStatusRepository.isActive(email);
+        return dto.getStatus() == FCMNotificationStatus.ACTIVE;
     }
 }
