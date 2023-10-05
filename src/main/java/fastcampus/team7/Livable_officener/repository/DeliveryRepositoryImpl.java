@@ -5,10 +5,13 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import fastcampus.team7.Livable_officener.domain.Room;
 import fastcampus.team7.Livable_officener.dto.delivery.RoomDetailDTO;
 import fastcampus.team7.Livable_officener.global.constant.Role;
+import fastcampus.team7.Livable_officener.global.constant.RoomStatus;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static fastcampus.team7.Livable_officener.domain.QChat.chat;
@@ -87,6 +90,16 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
                         JPAExpressions.select(chat.id.max()).from(chat).where(chat.room.id.eq(room.id))
                 ))
                 .orderBy(room.id.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Room> findByDeadlineAfterNowAndStatusEqualsActive() {
+        return queryFactory
+                .select(room)
+                .from(room)
+                .where(room.deadline.after(LocalDateTime.now())
+                        .and(room.status.eq(RoomStatus.ACTIVE)))
                 .fetch();
     }
 }

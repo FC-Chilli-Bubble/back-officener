@@ -35,7 +35,7 @@ public class SchedulingConfig {
     @Scheduled(fixedRate = 5000)
     @Transactional
     public void closeParticipationAfterDeadline() {
-        deliveryRepository.findByDeadlineAfterNow()
+        deliveryRepository.findByDeadlineAfterNowAndStatusEqualsActive()
                 .forEach(Room::closeParticipation);
     }
 
