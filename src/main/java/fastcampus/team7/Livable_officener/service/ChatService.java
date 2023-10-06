@@ -121,7 +121,7 @@ public class ChatService {
         roomParticipant.completeRemit();
 
         saveNotification(user, room, messageType);
-        pushNotificationToHostIfSubscribed(room, messageType);
+        pushNotificationToHostIfSubscribed(user, room, messageType);
 
         sendFixedSystemMessage(room, COMPLETE_REMITTANCE, user);
     }
@@ -167,16 +167,16 @@ public class ChatService {
         roomParticipant.completeReceive();
 
         saveNotification(user, room, messageType);
-        pushNotificationToHostIfSubscribed(room, messageType);
+        pushNotificationToHostIfSubscribed(user, room, messageType);
 
         sendFixedSystemMessage(room, COMPLETE_RECEIPT, user);
     }
 
-    private void pushNotificationToHostIfSubscribed(Room room, ChatType messageType) {
+    private void pushNotificationToHostIfSubscribed(User guest, Room room, ChatType messageType) {
         User host = getHost(room);
         boolean subscribed = fcmService.isSubscribed(host.getEmail());
         if (subscribed) {
-            pushNotificationToHost(host, messageType);
+            pushNotificationToHost(guest, host, messageType);
         }
     }
 
@@ -189,7 +189,7 @@ public class ChatService {
         validateIfRoomParticipantIsGuest(roomParticipant.getRole(), messageType.getDescription());
 
         saveNotification(user, room, messageType);
-        pushNotificationToHostIfSubscribed(room, messageType);
+        pushNotificationToHostIfSubscribed(user, room, messageType);
 
         sendFixedSystemMessage(room, REQUEST_EXIT, user);
     }
@@ -199,8 +199,8 @@ public class ChatService {
         notificationRepository.save(notification);
     }
 
-    private void pushNotificationToHost(User host, ChatType messageType) {
-        String body = messageType.getSystemMessageContent(host);
+    private void pushNotificationToHost(User guest, User host, ChatType messageType) {
+        String body = messageType.getSystemMessageContent(guest);
         // TODO 이미지 추후에 음식 사진 링크로 변경해야 함
         FCMNotificationDTO dto = new FCMNotificationDTO(host.getEmail(), body, null);
         fcmService.sendFcmNotification(dto);
