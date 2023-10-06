@@ -2,12 +2,7 @@ package fastcampus.team7.Livable_officener.controller;
 
 
 import fastcampus.team7.Livable_officener.domain.User;
-import fastcampus.team7.Livable_officener.dto.delivery.BankListResponseDTO;
-import fastcampus.team7.Livable_officener.dto.delivery.CreateDTO;
-import fastcampus.team7.Livable_officener.dto.delivery.PagedRoomListResponseDTO;
-import fastcampus.team7.Livable_officener.dto.delivery.ChatRoomListResponseDTO;
-import fastcampus.team7.Livable_officener.dto.delivery.RoomDetailDTO;
-import fastcampus.team7.Livable_officener.dto.delivery.UpdateStoreDetailDTO;
+import fastcampus.team7.Livable_officener.dto.delivery.*;
 import fastcampus.team7.Livable_officener.global.util.APIDataResponse;
 import fastcampus.team7.Livable_officener.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +24,17 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findRoomDetail(@PathVariable Long id,
-                                            @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> findRoomDetail(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user) {
+
         final RoomDetailDTO response = deliveryService.selectRoomDetail(id, user);
         return APIDataResponse.of(HttpStatus.OK, response);
     }
 
     @GetMapping("/bankList")
     public ResponseEntity<APIDataResponse<BankListResponseDTO>> bankList() {
+
         BankListResponseDTO response = deliveryService.loadBankList();
         return APIDataResponse.of(HttpStatus.OK, response);
     }
@@ -56,6 +54,7 @@ public class DeliveryController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateStoreDetailDTO requestDTO,
             @AuthenticationPrincipal User user) {
+
         deliveryService.updateStoreDetail(id, requestDTO, user);
 
         return APIDataResponse.empty(HttpStatus.OK);
@@ -65,22 +64,26 @@ public class DeliveryController {
     public ResponseEntity<?> deleteDelivery(
             @PathVariable Long id,
             @AuthenticationPrincipal User user) {
+
         deliveryService.deleteDelivery(id, user);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<APIDataResponse<PagedRoomListResponseDTO>> list(@RequestParam(defaultValue = "0") int page,
-                                                                          @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<APIDataResponse<PagedRoomListResponseDTO>> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
         PagedRoomListResponseDTO response = deliveryService.getRoomList(PageRequest.of(page, size));
         return APIDataResponse.of(HttpStatus.CREATED, response);
     }
 
     @GetMapping("/joinedRoom")
-    public ResponseEntity<APIDataResponse<PagedRoomListResponseDTO>> joinedRoom(@RequestParam(defaultValue = "0") int page,
-                                                                                                    @RequestParam(defaultValue = "10") int size,
-                                                                                                    @AuthenticationPrincipal User user) {
+    public ResponseEntity<APIDataResponse<PagedRoomListResponseDTO>> joinedRoom(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal User user) {
 
         PagedRoomListResponseDTO response = deliveryService.getFilteredRoomList(PageRequest.of(page, size), user);
         return APIDataResponse.of(HttpStatus.CREATED, response);
@@ -90,6 +93,7 @@ public class DeliveryController {
     public ResponseEntity<APIDataResponse<String>> join(
             @PathVariable Long id,
             @AuthenticationPrincipal User user) {
+
         deliveryService.joinDeliveryRoom(id, user);
         return APIDataResponse.empty(HttpStatus.CREATED);
     }
