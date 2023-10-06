@@ -26,17 +26,18 @@ public class WebSocketSessionManager {
         return (User) session.getPrincipal();
     }
 
-    public void addSessionToRoom(Long roomId, WebSocketSession session) {
-        Collection<WebSocketSession> sessions;
-        try {
-            sessions = getWebSocketSessions(roomId);
-        } catch (NotFoundRoomException e) {
-            sessions = Collections.synchronizedList(new ArrayList<>());
-            roomIdToSessions.put(roomId, sessions);
-            sessions.add(session);
+    public void addRoomInWebSocketSessionMap(Long roomId) {
+        if (roomIdToSessions.containsKey(roomId)) {
             return;
         }
+        List<WebSocketSession> sessions = Collections.synchronizedList(new ArrayList<>());
+        roomIdToSessions.put(roomId, sessions);
+    }
 
+    public void addSessionToRoom(Long roomId, WebSocketSession session) {
+        addRoomInWebSocketSessionMap(roomId);
+
+        Collection<WebSocketSession> sessions = getWebSocketSessions(roomId);
         User requestUser = getSessionUser(session);
         Optional<WebSocketSession> duplicateUserSession = sessions.stream()
                 .filter(sess -> getSessionUser(sess).equals(requestUser))

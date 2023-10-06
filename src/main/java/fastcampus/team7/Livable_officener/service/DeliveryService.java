@@ -10,6 +10,7 @@ import fastcampus.team7.Livable_officener.global.constant.Role;
 import fastcampus.team7.Livable_officener.global.constant.RoomStatus;
 import fastcampus.team7.Livable_officener.global.exception.NotFoundRoomException;
 import fastcampus.team7.Livable_officener.global.exception.UserIsNotParticipantException;
+import fastcampus.team7.Livable_officener.global.websocket.WebSocketSessionManager;
 import fastcampus.team7.Livable_officener.repository.BankRepository;
 import fastcampus.team7.Livable_officener.repository.DeliveryParticipantRepository;
 import fastcampus.team7.Livable_officener.repository.DeliveryRepository;
@@ -35,6 +36,7 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryParticipantRepository deliveryParticipantRepository;
     private final BankRepository bankRepository;
+    private final WebSocketSessionManager webSocketSessionManager;
 
     @Transactional
     public void registerRoom(CreateDTO createDTO, User user) {
@@ -71,6 +73,8 @@ public class DeliveryService {
 
         Room room = deliveryRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("올바른 roomId 아님"));
         deliveryParticipantRepository.save(roomParticipantSaveDTO.toEntity(room, user));
+
+        webSocketSessionManager.addRoomInWebSocketSessionMap(roomId);
     }
 
     public RoomDetailDTO selectRoomDetail(Long id, User user) {
