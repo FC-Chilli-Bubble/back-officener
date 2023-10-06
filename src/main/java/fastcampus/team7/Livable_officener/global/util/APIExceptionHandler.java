@@ -78,10 +78,10 @@ public class APIExceptionHandler {
         return handleExceptionInternal(e, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<?> handleIOException(IOException e) {
-        return handleExceptionInternal(e, "IOException", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler
+//    public ResponseEntity<?> handleIOException(IOException e) {
+//        return handleExceptionInternal(e, "IOException", HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     @ExceptionHandler
     public ResponseEntity<?> handleDuplicatedPhoneNumberException(DuplicatedPhoneNumberException e) {
@@ -127,4 +127,9 @@ public class APIExceptionHandler {
     public ResponseEntity<?> handleAlreadyReportSameUserException(AlreadyReportSameUserException e) {
         return handleExceptionInternal(e, "오늘 이미 해당 사용자를 신고하셨습니다.", HttpStatus.BAD_REQUEST);
     }
+
+//    @ExceptionHandler
+//    public ResponseEntity<?> handleException(Exception e) {
+//        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 }

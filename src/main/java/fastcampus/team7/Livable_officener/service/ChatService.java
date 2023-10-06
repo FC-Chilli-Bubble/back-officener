@@ -2,7 +2,6 @@ package fastcampus.team7.Livable_officener.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fastcampus.team7.Livable_officener.domain.*;
 import fastcampus.team7.Livable_officener.dto.chat.*;
 import fastcampus.team7.Livable_officener.dto.fcm.FCMNotificationDTO;
@@ -17,14 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static fastcampus.team7.Livable_officener.global.constant.ChatType.*;
@@ -33,7 +30,7 @@ import static fastcampus.team7.Livable_officener.global.constant.ChatType.*;
 @Service
 public class ChatService {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper mapper;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
@@ -42,16 +39,6 @@ public class ChatService {
     private final NotificationRepository notificationRepository;
     private final FCMService fcmService;
     private final WebSocketSessionManager webSocketSessionManager;
-
-    @PostConstruct
-    public void setup() {
-//        SimpleModule module = new SimpleModule();
-//        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
-//        objectMapper.registerModule(module);
-
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-    }
 
     @Transactional
     public void send(SendChatDTO sendChatDTO) throws IOException {
@@ -66,7 +53,7 @@ public class ChatService {
         Long senderId = sender.getId();
         String sendPayload = message.getPayload();
 
-        SendPayloadDTO sendPayloadDTO = objectMapper.readValue(sendPayload, SendPayloadDTO.class);
+        SendPayloadDTO sendPayloadDTO = mapper.readValue(sendPayload, SendPayloadDTO.class);
         sendPayloadDTO.setSenderId(senderId);
         return sendPayloadDTO;
     }
@@ -366,7 +353,7 @@ public class ChatService {
     }
 
     private TextMessage convertPayloadDtoToJsonTextMessage(SendPayloadDTO payloadDTO) throws JsonProcessingException {
-        String payload = objectMapper.writeValueAsString(payloadDTO);
+        String payload = mapper.writeValueAsString(payloadDTO);
         return new TextMessage(payload);
     }
 
