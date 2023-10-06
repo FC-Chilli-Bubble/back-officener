@@ -97,11 +97,11 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
     }
 
     @Override
-    public List<Room> findByDeadlineAfterNowAndStatusEqualsActive() {
+    public List<Room> findByStatusEqualsActiveAndDeadlineBeforeNow() {
         return queryFactory
                 .selectFrom(room)
                 .where(room.status.eq(RoomStatus.ACTIVE)
-                        .and(room.deadline.after(LocalDateTime.now())))
+                        .and(room.deadline.before(LocalDateTime.now())))
                 .fetch();
     }
 
@@ -117,7 +117,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
         return queryFactory
                 .selectFrom(room)
                 .where(room.status.eq(RoomStatus.ACTIVE)
-                        .and(room.deadline.after(LocalDateTime.now().plusMinutes(5)))
+                        .and(room.deadline.before(LocalDateTime.now().plusMinutes(5)))
                         .and(room.id.in(subquery)))
                 .fetch();
     }

@@ -12,7 +12,7 @@ plugins {
 }
 
 group = 'fastcampus.team7'
-version = '0.16.10-SNAPSHOT'
+version = '0.16.11-SNAPSHOT'
 
 java {
 	sourceCompatibility = '11'

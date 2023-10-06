@@ -12,7 +12,7 @@ public interface DeliveryRepositoryCustom {
 
     List<ChatRoomListDTO> findChatRoomList(Long userId);
 
-    List<Room> findByDeadlineAfterNowAndStatusEqualsActive();
+    List<Room> findByStatusEqualsActiveAndDeadlineBeforeNow();
 
     List<Room> findActiveAndCloseToDeadlineAndUnnotifiedRooms();
 }
