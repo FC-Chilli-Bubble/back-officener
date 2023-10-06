@@ -369,7 +369,7 @@ public class ChatService {
     @Transactional
     public ChatroomInfoDTO getChatroomInfo(Long roomId, User user) {
         Room room = getRoom(roomId);
-        validateIfRoomIsActive(room);
+        validateIfRoomIsNotTerminated(room);
 
         RoomParticipant participant = getRoomParticipant(roomId, user.getId());
         participant.resetUnreadCount();
@@ -377,9 +377,9 @@ public class ChatService {
         return createChatRoomInfoDTO(roomId, user.getId(), participant.getCreatedAt());
     }
 
-    private static void validateIfRoomIsActive(Room room) {
-        if (room.getStatus() != RoomStatus.ACTIVE) {
-            throw new NotActiveRoomException();
+    private static void validateIfRoomIsNotTerminated(Room room) {
+        if (room.getStatus() == RoomStatus.TERMINATED) {
+            throw new AccessTerminatedRoomException();
         }
     }
 
