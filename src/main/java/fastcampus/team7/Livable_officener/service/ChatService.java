@@ -245,6 +245,7 @@ public class ChatService {
         if (roomParticipant.getRole() == Role.HOST) {
             validateAllParticipantsCompletedRemitAndReceive(roomId);
             room.terminate();
+            webSocketSessionManager.removeRoomFromWebSocketSessionMap(roomId);
         } else if (roomParticipant.getRole() == Role.GUEST) {
             roomParticipant.guestExit();
             sendFixedSystemMessage(room, EXIT, user);
