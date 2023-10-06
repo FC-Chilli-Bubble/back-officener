@@ -34,6 +34,10 @@ public class WebSocketSessionManager {
         roomIdToSessions.put(roomId, sessions);
     }
 
+    public void removeRoomFromWebSocketSessionMap(Long roomId) {
+        roomIdToSessions.remove(roomId);
+    }
+
     public void addSessionToRoom(Long roomId, WebSocketSession session) {
         addRoomInWebSocketSessionMap(roomId);
 
