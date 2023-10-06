@@ -1,10 +1,13 @@
 package fastcampus.team7.Livable_officener.global.config;
 
-import fastcampus.team7.Livable_officener.global.sercurity.*;
-import io.jsonwebtoken.JwtException;
+import fastcampus.team7.Livable_officener.global.sercurity.JwtAuthenticationFilter;
+import fastcampus.team7.Livable_officener.global.sercurity.JwtExceptionFilter;
+import fastcampus.team7.Livable_officener.global.sercurity.JwtProvider;
+import fastcampus.team7.Livable_officener.global.websocket.WebSocketUpgradeMatcher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,10 +35,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeRequests(authorizationRequest -> authorizationRequest
+                    .requestMatchers(new WebSocketUpgradeMatcher())
+                        .permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/chat/{roomId:[0-9]+}?ticket=*")
+                        .permitAll()
                     .antMatchers("/", "/api/building", "/api/auth", "/api/confirm", "/api/signup", "/api/login")
-                    .permitAll()
+                        .permitAll()
                     .anyRequest()
-                    .authenticated()
+                        .authenticated()
             )
             .cors(cors -> cors
                     .configurationSource(corsConfigurationSource()))
