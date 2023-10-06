@@ -128,6 +128,16 @@ public class APIExceptionHandler {
         return handleExceptionInternal(e, "오늘 이미 해당 사용자를 신고하셨습니다.", HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<?> handleIllegalStateException(IllegalStateException e) {
+        return handleExceptionInternal(e, HttpStatus.BAD_REQUEST);
+    }
+
 //    @ExceptionHandler
 //    public ResponseEntity<?> handleException(Exception e) {
 //        return handleExceptionInternal(e, HttpStatus.INTERNAL_SERVER_ERROR);
