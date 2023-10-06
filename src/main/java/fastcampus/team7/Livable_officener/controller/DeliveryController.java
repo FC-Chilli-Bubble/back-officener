@@ -76,7 +76,7 @@ public class DeliveryController {
             @RequestParam(defaultValue = "10") int size) {
 
         PagedRoomListResponseDTO response = deliveryService.getRoomList(PageRequest.of(page, size));
-        return APIDataResponse.of(HttpStatus.CREATED, response);
+        return APIDataResponse.of(HttpStatus.OK, response);
     }
 
     @GetMapping("/joinedRoom")
@@ -86,7 +86,7 @@ public class DeliveryController {
             @AuthenticationPrincipal User user) {
 
         PagedRoomListResponseDTO response = deliveryService.getFilteredRoomList(PageRequest.of(page, size), user);
-        return APIDataResponse.of(HttpStatus.CREATED, response);
+        return APIDataResponse.of(HttpStatus.OK, response);
     }
 
     @PostMapping("/{id}/join")
