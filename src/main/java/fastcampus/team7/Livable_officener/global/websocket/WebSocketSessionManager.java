@@ -5,6 +5,7 @@ import fastcampus.team7.Livable_officener.domain.User;
 import fastcampus.team7.Livable_officener.dto.chat.GetParticipantDTO;
 import fastcampus.team7.Livable_officener.dto.chat.SendPayloadDTO;
 import fastcampus.team7.Livable_officener.global.constant.ChatType;
+import fastcampus.team7.Livable_officener.global.exception.AlreadyExistsWebSocketSession;
 import fastcampus.team7.Livable_officener.global.exception.NotFoundRoomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -47,7 +48,7 @@ public class WebSocketSessionManager {
                 .filter(sess -> getSessionUser(sess).equals(requestUser))
                 .findFirst();
         if (duplicateUserSession.isPresent()) {
-            throw new IllegalStateException("웹소켓 세션은 채팅방마다 참여자별로 하나만 연결 가능합니다.");
+            throw new AlreadyExistsWebSocketSession();
         }
         sessions.add(session);
     }

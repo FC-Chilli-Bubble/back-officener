@@ -209,7 +209,7 @@ public class ChatService {
     private User getHost(Room room) {
         List<Long> hostIds = roomParticipantRepository.findUserIdsByRoomIdAndRole(room.getId(), Role.HOST);
         if (hostIds.size() != 1) {
-            throw new IllegalStateException("해당 함께배달에 호스트가 존재하지 않거나 둘 이상 존재합니다.");
+            throw new NonUniqueHost();
         }
         Long hostId = hostIds.get(0);
         return getUser(hostId);

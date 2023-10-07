@@ -2,6 +2,7 @@ package fastcampus.team7.Livable_officener.global.websocket;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -26,6 +27,6 @@ public class WebSocketUpgradeMatcher implements RequestMatcher {
             return false;
         }
         String[] tickets = parameterMap.get("ticket");
-        return tickets != null && tickets.length == 1;
+        return tickets != null && tickets.length == 1 && StringUtils.hasText(tickets[0]);
     }
 }
