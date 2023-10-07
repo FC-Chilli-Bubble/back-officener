@@ -9,6 +9,9 @@ import fastcampus.team7.Livable_officener.dto.fcm.FCMStatusDTO;
 import fastcampus.team7.Livable_officener.dto.fcm.FCMUpdateRequestDTO;
 import fastcampus.team7.Livable_officener.global.constant.FCMNotificationStatus;
 import fastcampus.team7.Livable_officener.global.constant.FCMNotificationStatusUpdateType;
+import fastcampus.team7.Livable_officener.global.exception.EmptyFCMUpdateRequestType;
+import fastcampus.team7.Livable_officener.global.exception.EmptyFCMToken;
+import fastcampus.team7.Livable_officener.global.exception.NotFoundFCMToken;
 import fastcampus.team7.Livable_officener.global.fcm.FCMStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,12 +53,14 @@ public class FCMService {
                 log.info("로그인 (알림 켜기) - {}", dto.getEmail());
                 turnOnNotificationPushing(dto);
             }
+        } else {
+            throw new EmptyFCMUpdateRequestType();
         }
     }
 
     private static void validateIfTokenHasText(String fcmToken) {
         if (!StringUtils.hasText(fcmToken)) {
-            throw new IllegalArgumentException("fcmToken이 비어있습니다.");
+            throw new EmptyFCMToken();
         }
     }
 
@@ -91,7 +96,7 @@ public class FCMService {
         FCMStatusDTO dto = fcmStatusRepository.get(email);
         String fcmToken = dto.getFcmToken();
         if (fcmToken == null) {
-            throw new IllegalCallerException("FCM 토큰이 존재하지 않습니다.");
+            throw new NotFoundFCMToken();
         }
         return fcmToken;
     }
