@@ -118,7 +118,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepositoryCustom {
                 .selectFrom(room)
                 .where(room.status.eq(RoomStatus.ACTIVE)
                         .and(room.deadline.before(LocalDateTime.now().plusMinutes(5)))
-                        .and(room.id.in(subquery)))
+                        .and(room.id.notIn(subquery)))
                 .fetch();
     }
 }
