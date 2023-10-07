@@ -37,8 +37,6 @@ public class SecurityConfig {
             .authorizeRequests(authorizationRequest -> authorizationRequest
                     .requestMatchers(new WebSocketUpgradeMatcher())
                         .permitAll()
-                    .antMatchers(HttpMethod.GET, "/api/chat/{roomId:[0-9]+}?ticket=*")
-                        .permitAll()
                     .antMatchers("/", "/api/building", "/api/auth", "/api/confirm", "/api/signup", "/api/login")
                         .permitAll()
                     .anyRequest()
