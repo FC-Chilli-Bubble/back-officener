@@ -5,7 +5,7 @@ import fastcampus.team7.Livable_officener.domain.RoomParticipant;
 import fastcampus.team7.Livable_officener.domain.User;
 import fastcampus.team7.Livable_officener.dto.chat.ChatroomInfoDTO;
 import fastcampus.team7.Livable_officener.global.constant.RoomStatus;
-import fastcampus.team7.Livable_officener.global.exception.NotActiveRoomException;
+import fastcampus.team7.Livable_officener.global.exception.AccessTerminatedRoomException;
 import fastcampus.team7.Livable_officener.global.exception.NotFoundRoomException;
 import fastcampus.team7.Livable_officener.global.exception.UserIsNotParticipantException;
 import fastcampus.team7.Livable_officener.repository.ChatRepository;
@@ -53,8 +53,8 @@ class ChatServiceGetRoomInfoTest {
     }
 
     @ParameterizedTest
-    @EnumSource(value = RoomStatus.class, names = {"CLOSED", "TERMINATED"})
-    @DisplayName("roomId에 해당하는 함께배달이 활성 상태가 아니면 예외")
+    @EnumSource(value = RoomStatus.class, names = {"TERMINATED"})
+    @DisplayName("roomId에 해당하는 함께배달이 종료 상태이면 예외")
     void whenRoomInactive_thenThrowsNotActiveRoomException(RoomStatus status) {
         // given
         Room room = mock(Room.class);
@@ -65,7 +65,7 @@ class ChatServiceGetRoomInfoTest {
 
         // when, then
         assertThatThrownBy(() -> sut.getChatroomInfo(1L, mock(User.class)))
-                .isInstanceOf(NotActiveRoomException.class);
+                .isInstanceOf(AccessTerminatedRoomException.class);
     }
 
     @DisplayName("roomId에 해당하는 함께배달의 참여자가 아니면 예외")
