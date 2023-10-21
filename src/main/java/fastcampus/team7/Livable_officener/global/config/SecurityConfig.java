@@ -67,8 +67,6 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://fc-chilli-bubble.github.io/front-officener:5173",
-                "https://fc-chilli-bubble.github.io/front-officener",
                 "https://chillibubble-officener.netlify.app"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
