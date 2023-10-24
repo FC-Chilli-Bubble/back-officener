@@ -6,6 +6,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSocket
@@ -18,12 +20,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(customTextWebSocketHandler, "/api/chat/*")
-                .setAllowedOrigins("*")
+                .setAllowedOrigins(
+                        "http://localhost:5173",
+                        "https://chillibubble-officener.netlify.app")
                 .addInterceptors(customHandshakeInterceptor)
-                .setHandshakeHandler(customHandshakeHandler)
-//                .setAllowedOrigins("FRONT_ORIGIN") // 추후 프론트엔드 URL 결정되면 주석 풀기
-
-        ;
+                .setHandshakeHandler(customHandshakeHandler);
     }
 
 }
