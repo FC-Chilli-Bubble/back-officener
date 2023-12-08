@@ -72,7 +72,7 @@
 ## ⚙️ 프로젝트 설정
 
 ### 1️⃣ 시스템 아키텍처
-![chilliBubble_server_architecture](https://github.com/FC-Chilli-Bubble/back-officener/assets/42778315/3ca68353-8e4f-4792-9803-229008fe7acf)
+![chilliBubble_server_architecture](https://github.com/FC-Chilli-Bubble/back-officener/assets/22290112/001e3df2-5c62-4f41-826a-246ded90547e)
 
 <br>
 
@@ -95,7 +95,7 @@
 
 <br>
 
-### 💬**1:1 채팅**
+### 💬**함께배달 채팅**
 
 <img width="766" alt="스크린샷 2023-10-06 오후 1 33 05" src="https://github.com/FC-Chilli-Bubble/back-officener/assets/42778315/0686d286-1f1d-4be7-a239-8e98fd1a3987">
 
